@@ -9,11 +9,14 @@
     "noriokun4649"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/torchbowmod"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/torchbowmod",
+    "sources": "https://github.com/noriokun4649/TorchBowMod-fabric",
+    "issues": "https://github.com/noriokun4649/TorchBowMod-fabric/issues",
+    "email": "noriokun.official.mail@gmail.com"
   },
 
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "license": "MIT",
+  "icon": "assets/torchbowmod/icon.png",
 
   "environment": "*",
   "entrypoints": {
