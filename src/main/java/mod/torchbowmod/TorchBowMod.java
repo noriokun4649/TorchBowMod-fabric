@@ -24,12 +24,11 @@ public class TorchBowMod implements ModInitializer {
         TORCH = Registry.register(Registry.ENTITY_TYPE,
                 new Identifier(MODID, "entitytorch"),
                 FabricEntityTypeBuilder.<TorchEntity>create(SpawnGroup.MISC, TorchEntity::new)
-                        .trackable(60, 5, true).build());
+                        .trackRangeBlocks(60).trackedUpdateRate(5).forceTrackedVelocityUpdates(true).build());
     }
 
     @Override
     public void onInitialize() {
-        System.out.println("おまんこぶりゅりゅりゅブリュッセル!");
         Registry.register(Registry.ITEM, new Identifier(MODID, "torchbow"), TORCH_BOW_ITEM);
         Registry.register(Registry.ITEM, new Identifier(MODID, "multitorch"), MULCH_TORCH_ITEM);
     }

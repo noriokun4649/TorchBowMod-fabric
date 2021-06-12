@@ -32,9 +32,8 @@ public class TorchBow extends BowItem implements Vanishable {
 
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        if (user instanceof PlayerEntity) {
-            PlayerEntity playerEntity = (PlayerEntity) user;
-            boolean bl = playerEntity.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
+        if (user instanceof PlayerEntity playerEntity) {
+            boolean bl = playerEntity.getAbilities().creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
             ItemStack itemStack = playerEntity.getArrowType(stack);
             if (!itemStack.isEmpty() || bl) {
                 if (itemStack.isEmpty()) {
@@ -60,11 +59,11 @@ public class TorchBow extends BowItem implements Vanishable {
                         }
                     }
 
-                    world.playSound((PlayerEntity) null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
-                    if (!bl2 && !playerEntity.abilities.creativeMode) {
+                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+                    if (!bl2 && !playerEntity.getAbilities().creativeMode) {
                         itemStack.decrement(1);
                         if (itemStack.isEmpty()) {
-                            playerEntity.inventory.removeOne(itemStack);
+                            playerEntity.getInventory().removeOne(itemStack);
                         }
                     }
 
@@ -80,7 +79,7 @@ public class TorchBow extends BowItem implements Vanishable {
 
     private void shootTorch(int offsetX, int offsetY, PlayerEntity entitle, LivingEntity livingEntity, World worldIn, ItemStack itemstack, ItemStack stack, boolean flag1, float f) {
         TorchEntity abstractedly = new TorchEntity(worldIn, livingEntity);
-        abstractedly.setProperties(entitle, entitle.pitch + offsetX, entitle.yaw + offsetY, 0F, f * 3.0F, 1.0F);
+        abstractedly.setProperties(entitle, entitle.getPitch() + offsetX, entitle.getYaw() + offsetY, 0F, f * 3.0F, 1.0F);
         if (f == 1.0F) {
             abstractedly.setCritical(true);
         }
@@ -99,10 +98,8 @@ public class TorchBow extends BowItem implements Vanishable {
             abstractedly.setOnFireFor(100);
         }
 
-        stack.damage(1, entitle, (p_220009_1_) -> {
-            p_220009_1_.sendToolBreakStatus(entitle.getActiveHand());
-        });
-        if (flag1 || entitle.abilities.creativeMode && (itemstack.getItem() == Blocks.TORCH.asItem())) {
+        stack.damage(1, entitle, (p_220009_1_) -> p_220009_1_.sendToolBreakStatus(entitle.getActiveHand()));
+        if (flag1 || entitle.getAbilities().creativeMode && (itemstack.getItem() == Blocks.TORCH.asItem())) {
             abstractedly.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
         }
         worldIn.spawnEntity(abstractedly);

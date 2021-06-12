@@ -49,9 +49,8 @@ public class TorchEntity extends PersistentProjectileEntity {
         super.onBlockHit(blockHitResult);
         HitResult.Type raytraced$type = blockHitResult.getType();
         if (raytraced$type == HitResult.Type.BLOCK) {
-            BlockHitResult blockbusters = blockHitResult;
-            BlockState blockstate = this.world.getBlockState(blockbusters.getBlockPos());
-            setTorch(blockbusters, blockstate, blockHitResult);
+            BlockState blockstate = this.world.getBlockState(blockHitResult.getBlockPos());
+            setTorch(blockHitResult, blockstate, blockHitResult);
         }
     }
 
@@ -70,28 +69,21 @@ public class TorchEntity extends PersistentProjectileEntity {
                     } else if (face != DOWN) {
                         world.setBlockState(setBlockPos, torch_state.with(HORIZONTAL_FACING, face));
                     }
-                    this.remove();
+                    this.remove(RemovalReason.KILLED);
                 }
             }
         }
     }
 
     private BlockPos getPosOfFace(BlockPos blockPos, Direction face) {
-        switch (face) {
-            case UP:
-                return blockPos.up();
-            case EAST:
-                return blockPos.east();
-            case WEST:
-                return blockPos.west();
-            case SOUTH:
-                return blockPos.south();
-            case NORTH:
-                return blockPos.north();
-            case DOWN:
-                return blockPos.down();
-        }
-        return blockPos;
+        return switch (face) {
+            case UP -> blockPos.up();
+            case EAST -> blockPos.east();
+            case WEST -> blockPos.west();
+            case SOUTH -> blockPos.south();
+            case NORTH -> blockPos.north();
+            case DOWN -> blockPos.down();
+        };
     }
 
     private boolean isBlockAIR(BlockPos pos) {
@@ -112,7 +104,7 @@ public class TorchEntity extends PersistentProjectileEntity {
     @Override
     public Packet<?> createSpawnPacket() {
         PacketByteBuf byteBuf = new PacketByteBuf(Unpooled.buffer());
-        byteBuf.writeInt(this.getEntityId());
+        byteBuf.writeInt(this.getId());
         byteBuf.writeDouble(this.getX());
         byteBuf.writeDouble(this.getY());
         byteBuf.writeDouble(this.getZ());
