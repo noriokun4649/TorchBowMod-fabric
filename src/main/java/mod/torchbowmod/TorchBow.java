@@ -60,7 +60,7 @@ public class TorchBow extends BowItem implements Vanishable {
                         }
                     }
 
-                    world.playSound((PlayerEntity) null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (RANDOM.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
                     if (!bl2 && !playerEntity.abilities.creativeMode) {
                         itemStack.decrement(1);
                         if (itemStack.isEmpty()) {
@@ -99,9 +99,7 @@ public class TorchBow extends BowItem implements Vanishable {
             abstractedly.setOnFireFor(100);
         }
 
-        stack.damage(1, entitle, (p_220009_1_) -> {
-            p_220009_1_.sendToolBreakStatus(entitle.getActiveHand());
-        });
+        stack.damage(1, entitle, (playerEntity) -> playerEntity.sendToolBreakStatus(entitle.getActiveHand()));
         if (flag1 || entitle.abilities.creativeMode && (itemstack.getItem() == Blocks.TORCH.asItem())) {
             abstractedly.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
         }

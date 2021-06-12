@@ -29,7 +29,6 @@ public class TorchBowMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        System.out.println("おまんこぶりゅりゅりゅブリュッセル!");
         Registry.register(Registry.ITEM, new Identifier(MODID, "torchbow"), TORCH_BOW_ITEM);
         Registry.register(Registry.ITEM, new Identifier(MODID, "multitorch"), MULCH_TORCH_ITEM);
     }

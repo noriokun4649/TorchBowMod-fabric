@@ -49,9 +49,8 @@ public class TorchEntity extends PersistentProjectileEntity {
         super.onBlockHit(blockHitResult);
         HitResult.Type raytraced$type = blockHitResult.getType();
         if (raytraced$type == HitResult.Type.BLOCK) {
-            BlockHitResult blockbusters = blockHitResult;
-            BlockState blockstate = this.world.getBlockState(blockbusters.getBlockPos());
-            setTorch(blockbusters, blockstate, blockHitResult);
+            BlockState blockstate = this.world.getBlockState(blockHitResult.getBlockPos());
+            setTorch(blockHitResult, blockstate, blockHitResult);
         }
     }
 
