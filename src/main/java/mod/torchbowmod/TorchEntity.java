@@ -41,7 +41,7 @@ public class TorchEntity extends PersistentProjectileEntity {
     protected void onEntityHit(EntityHitResult entityHitResult) {
         super.onEntityHit(entityHitResult);
         Entity entity = entityHitResult.getEntity();
-        entity.setOnFireFor(100);
+        entity.setOnFireFor(5);
     }
 
     @Override
