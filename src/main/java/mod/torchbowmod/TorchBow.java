@@ -6,7 +6,10 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.Vanishable;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -16,14 +19,12 @@ import net.minecraft.world.World;
 import java.util.function.Predicate;
 
 import static mod.torchbowmod.TorchBowMod.MULCH_TORCH_ITEM;
-import static mod.torchbowmod.TorchBowMod.STORAGE_BOX;
 
 
 public class TorchBow extends BowItem implements Vanishable {
 
-    private final Predicate<ItemStack> TORCH = (itemStack) -> itemStack.getItem() == Blocks.TORCH.asItem() ||
-            itemStack.getItem() == MULCH_TORCH_ITEM ||
-            (itemStack.getItem() == STORAGE_BOX && isIncludedTorch(itemStack));
+    public static final Predicate<ItemStack> TORCH = (itemStack) -> itemStack.getItem() == Blocks.TORCH.asItem() ||
+            itemStack.getItem() == MULCH_TORCH_ITEM;
 
     public TorchBow(Settings settings) {
         super(settings);
@@ -46,7 +47,7 @@ public class TorchBow extends BowItem implements Vanishable {
                     if (!world.isClient) {
                         int size = 10;
                         shootTorch(playerEntity, user, world, itemStack, stack, bl2, f);
-                        if (itemStack.getItem() == MULCH_TORCH_ITEM  || isIncludedMultiTorch(itemStack)) {
+                        if (itemStack.getItem() == MULCH_TORCH_ITEM) {
                             shootTorch(-size, size, playerEntity, user, world, itemStack, stack, bl2, f);
                             shootTorch(-size, 0, playerEntity, user, world, itemStack, stack, bl2, f);
                             shootTorch(-size, -size, playerEntity, user, world, itemStack, stack, bl2, f);
@@ -60,13 +61,9 @@ public class TorchBow extends BowItem implements Vanishable {
 
                     world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
                     if (!bl2 && !playerEntity.getAbilities().creativeMode) {
-                        if (itemStack.getItem() == STORAGE_BOX){
-                            decrementTorch(itemStack);
-                        }else{
-                            itemStack.decrement(1);
-                            if (itemStack.isEmpty()) {
-                                playerEntity.getInventory().removeOne(itemStack);
-                            }
+                        itemStack.decrement(1);
+                        if (itemStack.isEmpty()) {
+                            playerEntity.getInventory().removeOne(itemStack);
                         }
                     }
 
@@ -82,7 +79,7 @@ public class TorchBow extends BowItem implements Vanishable {
 
     private void shootTorch(int offsetX, int offsetY, PlayerEntity entitle, LivingEntity livingEntity, World worldIn, ItemStack itemstack, ItemStack stack, boolean flag1, float f) {
         TorchEntity abstractedly = new TorchEntity(worldIn, livingEntity);
-        abstractedly.setProperties(entitle, entitle.getPitch() + offsetX, entitle.getYaw() + offsetY, 0F, f * 3.0F, 1.0F);
+        abstractedly.setVelocity(entitle, entitle.getPitch() + offsetX, entitle.getYaw() + offsetY, 0F, f * 3.0F, 1.0F);
         if (f == 1.0F) {
             abstractedly.setCritical(true);
         }
@@ -131,36 +128,6 @@ public class TorchBow extends BowItem implements Vanishable {
     @Override
     public int getMaxUseTime(ItemStack stack) {
         return 72000;
-    }
-
-    private boolean isIncludedTorch(ItemStack itemStack){
-        var tag = itemStack.getTag();
-        if(itemStack.getItem() != STORAGE_BOX || tag == null) return false;
-        var itemData = tag.getCompound("item");
-        var inItemStack = ItemStack.fromNbt(itemData);
-        if (inItemStack.getItem() == Blocks.TORCH.asItem() || inItemStack.getItem() == MULCH_TORCH_ITEM){
-            var size = tag.getInt("countInBox");
-            return size > 0;
-        }
-        return false;
-    }
-
-    private boolean isIncludedMultiTorch(ItemStack itemStack){
-        if(isIncludedTorch(itemStack) && itemStack.getTag() != null){
-            return ItemStack.fromNbt(itemStack.getTag().getCompound("item")).getItem() == MULCH_TORCH_ITEM;
-        }
-        return false;
-    }
-
-    private void decrementTorch(ItemStack itemStack){
-        var tag = itemStack.getTag();
-        if (!isIncludedTorch(itemStack) || tag == null) return;
-        var size = tag.getInt("countInBox");
-        if (--size > 0){
-            tag.putInt("countInBox", size);
-        }else {
-            tag.remove("item");
-        }
     }
 
 }

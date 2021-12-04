@@ -4,7 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +28,7 @@ public class TorchBowModClient implements ClientModInitializer {
             }
             return livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F;
         });
-        EntityRendererRegistry.INSTANCE.register(TORCH, TorchEntityRender::new);
+        EntityRendererRegistry.register(TORCH, TorchEntityRender::new);
         ClientPlayNetworking.registerGlobalReceiver(new Identifier(MODID, "spawntorch"), (client, handler, buf, responseSender) -> {
             int entityId = buf.readInt();
             double x = buf.readDouble();
