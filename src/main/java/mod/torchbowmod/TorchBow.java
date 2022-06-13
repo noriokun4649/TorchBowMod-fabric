@@ -19,12 +19,13 @@ import net.minecraft.world.World;
 import java.util.function.Predicate;
 
 import static mod.torchbowmod.TorchBowMod.MULCH_TORCH_ITEM;
+import static mod.torchbowmod.TorchBowMod.TORCH_ARROW_ITEM;
 
 
 public class TorchBow extends BowItem implements Vanishable {
 
     public static final Predicate<ItemStack> TORCH = (itemStack) -> itemStack.getItem() == Blocks.TORCH.asItem() ||
-            itemStack.getItem() == MULCH_TORCH_ITEM;
+            itemStack.getItem() == MULCH_TORCH_ITEM || itemStack.getItem() == TORCH_ARROW_ITEM;
 
     public TorchBow(Settings settings) {
         super(settings);
