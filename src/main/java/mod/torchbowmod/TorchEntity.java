@@ -21,13 +21,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-import static mod.torchbowmod.TorchBowMod.MODID;
-import static mod.torchbowmod.TorchBowMod.TORCH;
+import static mod.torchbowmod.TorchBowMod.*;
 import static net.minecraft.state.property.Properties.HORIZONTAL_FACING;
 import static net.minecraft.util.math.Direction.DOWN;
 import static net.minecraft.util.math.Direction.UP;
 
 public class TorchEntity extends PersistentProjectileEntity {
+    private boolean isArrowMode = false;
 
     protected TorchEntity(EntityType<? extends TorchEntity> entityType, World world) {
         super(entityType, world);
@@ -35,6 +35,11 @@ public class TorchEntity extends PersistentProjectileEntity {
 
     public TorchEntity(World worldIn, LivingEntity livingEntity) {
         super(TORCH, livingEntity, worldIn);
+    }
+
+    public TorchEntity(World worldIn, LivingEntity livingEntity, boolean arrowMode) {
+        super(TORCH, livingEntity, worldIn);
+        isArrowMode = arrowMode;
     }
 
     @Override
@@ -98,7 +103,7 @@ public class TorchEntity extends PersistentProjectileEntity {
 
     @Override
     protected ItemStack asItemStack() {
-        return new ItemStack(Blocks.TORCH);
+        return isArrowMode ? new ItemStack(TORCH_ARROW_ITEM) : new ItemStack(Blocks.TORCH);
     }
 
     @Override

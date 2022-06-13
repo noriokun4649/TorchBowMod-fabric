@@ -16,8 +16,9 @@ public class TorchBowMod implements ModInitializer {
     public static final String MODID = "torchbowmod";
     public static final ItemGroup TORCH_BOW_GROUP = FabricItemGroupBuilder.build(new Identifier(MODID, "torchbowmod_tab"),
             () -> new ItemStack(TorchBowMod.TORCH_BOW_ITEM));
-    public static final Item TORCH_BOW_ITEM = new TorchBow(new Item.Settings().group(TorchBowMod.TORCH_BOW_GROUP).maxDamage(384));
-    public static final Item MULCH_TORCH_ITEM = new Item(new Item.Settings().group(TorchBowMod.TORCH_BOW_GROUP).maxCount(64));
+    public static final Item TORCH_BOW_ITEM = new TorchBow(new Item.Settings().group(TORCH_BOW_GROUP).maxDamage(384));
+    public static final Item MULCH_TORCH_ITEM = new Item(new Item.Settings().group(TORCH_BOW_GROUP).maxCount(64));
+    public static final Item TORCH_ARROW_ITEM = new TorchArrow(new Item.Settings().group(TORCH_BOW_GROUP).maxCount(64));
     public static final EntityType<TorchEntity> TORCH;
 
     static {
@@ -31,6 +32,7 @@ public class TorchBowMod implements ModInitializer {
     public void onInitialize() {
         Registry.register(Registry.ITEM, new Identifier(MODID, "torchbow"), TORCH_BOW_ITEM);
         Registry.register(Registry.ITEM, new Identifier(MODID, "multitorch"), MULCH_TORCH_ITEM);
+        Registry.register(Registry.ITEM, new Identifier(MODID, "torcharrow"), TORCH_ARROW_ITEM);
     }
 
 }
