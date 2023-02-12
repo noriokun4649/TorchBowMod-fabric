@@ -12,6 +12,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -107,7 +108,7 @@ public class TorchEntity extends PersistentProjectileEntity {
     }
 
     @Override
-    public Packet<?> createSpawnPacket() {
+    public Packet<ClientPlayPacketListener> createSpawnPacket() {
         PacketByteBuf byteBuf = new PacketByteBuf(Unpooled.buffer());
         byteBuf.writeInt(this.getId());
         byteBuf.writeDouble(this.getX());
