@@ -30,7 +30,7 @@ public class TorchBowMod implements ModInitializer {
     public void onInitialize() {
         FabricItemGroup.builder(new Identifier(MODID, "torchbowmod_tab"))
                 .icon(() -> new ItemStack(TorchBowMod.TORCH_BOW_ITEM))
-                .entries((enabledFeatures, entries, operatorEnabled) -> {
+                .entries((enabledFeatures, entries) -> {
                     entries.add(TorchBowMod.TORCH_BOW_ITEM);
                     entries.add(TorchBowMod.MULCH_TORCH_ITEM);
                     entries.add(TorchBowMod.TORCH_ARROW_ITEM);
