@@ -1,6 +1,5 @@
 package mod.torchbowmod;
 
-import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,11 +9,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -107,13 +101,13 @@ public class TorchEntity extends PersistentProjectileEntity {
         return isArrowMode ? new ItemStack(TORCH_ARROW_ITEM) : new ItemStack(Blocks.TORCH);
     }
 
-    @Override
-    public Packet<ClientPlayPacketListener> createSpawnPacket() {
-        PacketByteBuf byteBuf = new PacketByteBuf(Unpooled.buffer());
-        byteBuf.writeInt(this.getId());
-        byteBuf.writeDouble(this.getX());
-        byteBuf.writeDouble(this.getY());
-        byteBuf.writeDouble(this.getZ());
-        return new CustomPayloadS2CPacket(new Identifier(MODID, "spawntorch"), byteBuf);
-    }
+//    @Override
+//    public Packet<ClientPlayPacketListener> createSpawnPacket() {
+//        PacketByteBuf byteBuf = new PacketByteBuf(Unpooled.buffer());
+//        byteBuf.writeInt(this.getId());
+//        byteBuf.writeDouble(this.getX());
+//        byteBuf.writeDouble(this.getY());
+//        byteBuf.writeDouble(this.getZ());
+//        return new CustomPayloadS2CPacket(new Identifier(MODID, "spawntorch"), byteBuf);
+//    }
 }
