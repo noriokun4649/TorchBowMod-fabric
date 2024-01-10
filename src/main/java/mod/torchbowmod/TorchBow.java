@@ -24,8 +24,10 @@ import static mod.torchbowmod.TorchBowMod.TORCH_ARROW_ITEM;
 
 public class TorchBow extends BowItem implements Vanishable {
 
-    public static final Predicate<ItemStack> TORCH = (itemStack) -> itemStack.getItem() == Blocks.TORCH.asItem() ||
-            itemStack.getItem() == MULCH_TORCH_ITEM || itemStack.getItem() == TORCH_ARROW_ITEM;
+    public static final Predicate<ItemStack> TORCH = itemStack -> itemStack.isOf(Blocks.TORCH.asItem());
+    public static final Predicate<ItemStack> TORCH_ARROW = itemStack -> itemStack.isOf(TORCH_ARROW_ITEM);
+    public static final Predicate<ItemStack> MULCH_TORCH = itemStack -> itemStack.isOf(MULCH_TORCH_ITEM);
+    public static final Predicate<ItemStack> TORCH_GROUP = TORCH.or(TORCH_ARROW).or(MULCH_TORCH);
 
     public TorchBow(Settings settings) {
         super(settings);
@@ -44,11 +46,11 @@ public class TorchBow extends BowItem implements Vanishable {
                 int i = this.getMaxUseTime(stack) - remainingUseTicks;
                 float f = getPullProgress(i);
                 if ((double) f >= 0.1D) {
-                    boolean bl2 = bl && itemStack.getItem() == Items.ARROW;
+                    boolean bl2 = bl && itemStack.isOf(Items.ARROW);
                     if (!world.isClient) {
                         int size = 10;
                         shootTorch(playerEntity, user, world, itemStack, stack, bl2, f);
-                        if (itemStack.getItem() == MULCH_TORCH_ITEM) {
+                        if (itemStack.isOf(MULCH_TORCH_ITEM)) {
                             shootTorch(-size, size, playerEntity, user, world, itemStack, stack, bl2, f);
                             shootTorch(-size, 0, playerEntity, user, world, itemStack, stack, bl2, f);
                             shootTorch(-size, -size, playerEntity, user, world, itemStack, stack, bl2, f);
@@ -100,7 +102,7 @@ public class TorchBow extends BowItem implements Vanishable {
         }
 
         stack.damage(1, entitle, (p_220009_1_) -> p_220009_1_.sendToolBreakStatus(entitle.getActiveHand()));
-        if (flag1 || entitle.getAbilities().creativeMode && (itemstack.getItem() == Blocks.TORCH.asItem())) {
+        if (flag1 || entitle.getAbilities().creativeMode && (itemstack.isOf(Blocks.TORCH.asItem()))) {
             abstractedly.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
         }
         worldIn.spawnEntity(abstractedly);
@@ -113,12 +115,12 @@ public class TorchBow extends BowItem implements Vanishable {
 
     @Override
     public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-        return ingredient.getItem() == Items.FLINT_AND_STEEL || super.canRepair(stack, ingredient);
+        return ingredient.isOf(Items.FLINT_AND_STEEL) || super.canRepair(stack, ingredient);
     }
 
     @Override
     public Predicate<ItemStack> getProjectiles() {
-        return TORCH;
+        return TORCH_GROUP;
     }
 
     @Override
