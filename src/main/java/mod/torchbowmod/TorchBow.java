@@ -79,7 +79,7 @@ public class TorchBow extends BowItem implements Vanishable {
     }
 
     private void shootTorch(int offsetX, int offsetY, PlayerEntity entitle, LivingEntity livingEntity, World worldIn, ItemStack itemstack, ItemStack stack, boolean flag1, float f) {
-        TorchEntity abstractedly = new TorchEntity(worldIn, livingEntity);
+        TorchEntity abstractedly = new TorchEntity(worldIn, livingEntity, itemstack.copyWithCount(1));
         abstractedly.setVelocity(entitle, entitle.getPitch() + offsetX, entitle.getYaw() + offsetY, 0F, f * 3.0F, 1.0F);
         if (f == 1.0F) {
             abstractedly.setCritical(true);

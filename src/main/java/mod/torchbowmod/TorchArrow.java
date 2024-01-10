@@ -13,6 +13,6 @@ public class TorchArrow extends ArrowItem {
     }
 
     public PersistentProjectileEntity createArrow(World world, ItemStack stack, LivingEntity shooter) {
-        return new TorchEntity(world, shooter, true);
+        return new TorchEntity(world, shooter, stack.copyWithCount(1));
     }
 }

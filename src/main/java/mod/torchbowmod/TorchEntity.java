@@ -4,10 +4,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PlantBlock;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -22,19 +25,21 @@ import static net.minecraft.util.math.Direction.DOWN;
 import static net.minecraft.util.math.Direction.UP;
 
 public class TorchEntity extends PersistentProjectileEntity {
-    private boolean isArrowMode = false;
 
-    protected TorchEntity(EntityType<? extends TorchEntity> entityType, World world) {
-        super(entityType, world);
+    protected TorchEntity(EntityType<? extends TorchEntity> entityType, World world, ItemStack itemStack) {
+        super(entityType, world, itemStack);
+    }
+
+    public TorchEntity(World worldIn, LivingEntity livingEntity, ItemStack itemStack) {
+        super(TORCH, livingEntity, worldIn, itemStack);
+    }
+
+    public TorchEntity(EntityType<TorchEntity> torchEntityEntityType, World world) {
+        this(torchEntityEntityType, world, new ItemStack(Blocks.TORCH));
     }
 
     public TorchEntity(World worldIn, LivingEntity livingEntity) {
-        super(TORCH, livingEntity, worldIn);
-    }
-
-    public TorchEntity(World worldIn, LivingEntity livingEntity, boolean arrowMode) {
-        super(TORCH, livingEntity, worldIn);
-        isArrowMode = arrowMode;
+        this(worldIn, livingEntity, new ItemStack(Blocks.TORCH));
     }
 
     @Override
@@ -95,19 +100,4 @@ public class TorchEntity extends PersistentProjectileEntity {
         }
         return false;
     }
-
-    @Override
-    protected ItemStack asItemStack() {
-        return isArrowMode ? new ItemStack(TORCH_ARROW_ITEM) : new ItemStack(Blocks.TORCH);
-    }
-
-//    @Override
-//    public Packet<ClientPlayPacketListener> createSpawnPacket() {
-//        PacketByteBuf byteBuf = new PacketByteBuf(Unpooled.buffer());
-//        byteBuf.writeInt(this.getId());
-//        byteBuf.writeDouble(this.getX());
-//        byteBuf.writeDouble(this.getY());
-//        byteBuf.writeDouble(this.getZ());
-//        return new CustomPayloadS2CPacket(new Identifier(MODID, "spawntorch"), byteBuf);
-//    }
 }
