@@ -1,13 +1,17 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 plugins {
 	id 'fabric-loom' version '1.4-SNAPSHOT'
 	id 'maven-publish'
+	id 'net.darkhax.curseforgegradle' version '1.+'
+	id "com.modrinth.minotaur" version "2.+"
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
-archivesBaseName = project.archives_base_name
-version = project.mod_version
+archivesBaseName ="$archives_base_name-$modloader_name-$minecraft_version"
+version = "v$project.mod_version"
 group = project.maven_group
 
 repositories {
@@ -84,4 +88,44 @@ publishing {
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
 	}
+}
+
+def releaseType  = "release" // can also be `beta` or `alpha`
+
+modrinth {
+	token = System.getenv("MODRINTH_TOKEN")
+	projectId = "EYY4PWCG"
+	versionNumber = mod_version
+	versionType = releaseType
+	uploadFile = remapJar
+	gameVersions = [minecraft_version]
+	loaders = [modloader_name.toLowerCase()]
+	changelog = new File('./CHANGELOG.md').text
+	dependencies {
+		required.project "fabric-api"
+	}
+}
+
+tasks.register('publishCurseForge', TaskPublishCurseForge) {
+	apiToken = System.getenv('CURSE_FORGE_TOKEN')
+	def mainFile = upload(289658, remapJar)
+	mainFile.releaseType = releaseType
+	mainFile.changelog = new File('./CHANGELOG.md').text
+	mainFile.changelogType = 'markdown'
+	mainFile.addRequirement('fabric-api')
+}
+
+configure(publishCurseForge) {
+	group = 'Publishing'
+	description = 'Upload project to CurseForge'
+}
+
+tasks.register('publishModSites'){
+	publishCurseForge
+	modrinth
+}
+
+configure(publishModSites) {
+	group = 'Publishing'
+	description = 'Upload project to CurseForge and Modrinth'
 }
