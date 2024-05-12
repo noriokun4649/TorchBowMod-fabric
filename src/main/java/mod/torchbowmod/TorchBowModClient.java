@@ -29,21 +29,6 @@ public class TorchBowModClient implements ClientModInitializer {
             return livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F;
         });
         EntityRendererRegistry.register(TORCH, TorchEntityRender::new);
-        ClientPlayNetworking.registerGlobalReceiver(new Identifier(MODID, "spawntorch"), (client, handler, buf, responseSender) -> {
-            int entityId = buf.readInt();
-            double x = buf.readDouble();
-            double y = buf.readDouble();
-            double z = buf.readDouble();
-            client.execute(() -> {
-                ClientWorld world = client.world;
-                PlayerEntity playerEntity = client.player;
-                TorchEntity torchEntity = new TorchEntity(world, playerEntity);
-                torchEntity.setPos(x, y, z);
-                torchEntity.setId(entityId);
-                torchEntity.updateTrackedPosition(x, y, z);
-                if (world != null) world.addEntity(torchEntity);
-            });
-        });
     }
 }
 

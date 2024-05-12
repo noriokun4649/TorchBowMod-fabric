@@ -1,15 +1,12 @@
 package mod.torchbowmod;
 
 import net.minecraft.block.*;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -18,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-import static mod.torchbowmod.TorchBowMod.*;
+import static mod.torchbowmod.TorchBowMod.TORCH;
 import static net.minecraft.entity.EntityType.LIGHTNING_BOLT;
 import static net.minecraft.state.property.Properties.HORIZONTAL_FACING;
 import static net.minecraft.util.math.Direction.DOWN;
@@ -65,6 +62,11 @@ public class TorchEntity extends PersistentProjectileEntity {
                 setTorch(blockHitResult, blockstate, blockHitResult);
             }
         }
+    }
+
+    @Override
+    protected ItemStack getDefaultItemStack() {
+        return null;
     }
 
 

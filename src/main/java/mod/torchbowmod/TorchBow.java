@@ -9,7 +9,6 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.Vanishable;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -22,7 +21,7 @@ import static mod.torchbowmod.TorchBowMod.MULCH_TORCH_ITEM;
 import static mod.torchbowmod.TorchBowMod.TORCH_ARROW_ITEM;
 
 
-public class TorchBow extends BowItem implements Vanishable {
+public class TorchBow extends BowItem {
 
     public static final Predicate<ItemStack> TORCH = itemStack -> itemStack.isOf(Blocks.TORCH.asItem());
     public static final Predicate<ItemStack> TORCH_ARROW = itemStack -> itemStack.isOf(TORCH_ARROW_ITEM);
@@ -100,8 +99,7 @@ public class TorchBow extends BowItem implements Vanishable {
         if (EnchantmentHelper.getLevel(Enchantments.FLAME, stack) > 0) {
             abstractedly.setOnFireFor(100);
         }
-
-        stack.damage(1, entitle, (p_220009_1_) -> p_220009_1_.sendToolBreakStatus(entitle.getActiveHand()));
+        stack.damage(getWeaponStackDamage(itemstack), entitle, LivingEntity.getSlotForHand(entitle.getActiveHand()));
         if (flag1 || entitle.getAbilities().creativeMode && (itemstack.isOf(Blocks.TORCH.asItem()))) {
             abstractedly.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
         }
