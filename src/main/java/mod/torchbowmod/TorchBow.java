@@ -1,119 +1,117 @@
 package mod.torchbowmod;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.consume.UseAction;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Predicate;
 
-import static mod.torchbowmod.TorchBowMod.MULCH_TORCH_ITEM;
-import static mod.torchbowmod.TorchBowMod.TORCH_ARROW_ITEM;
+import static mod.torchbowmod.TorchBowMod.*;
 
 
 public class TorchBow extends BowItem {
 
     public static final Predicate<ItemStack> TORCH = itemStack -> itemStack.isOf(Blocks.TORCH.asItem());
-    public static final Predicate<ItemStack> TORCH_ARROW = itemStack -> itemStack.isOf(TORCH_ARROW_ITEM);
-    public static final Predicate<ItemStack> MULCH_TORCH = itemStack -> itemStack.isOf(MULCH_TORCH_ITEM);
+    public static final Predicate<ItemStack> TORCH_ARROW = itemStack -> itemStack.isOf(TORCH_ARROW_ITEM.asItem());
+    public static final Predicate<ItemStack> MULCH_TORCH = itemStack -> itemStack.isOf(MULCH_TORCH_ITEM.asItem());
     public static final Predicate<ItemStack> TORCH_GROUP = TORCH.or(TORCH_ARROW).or(MULCH_TORCH);
+
+    private class Offsets {
+        private float X;
+        private float Y;
+
+        Offsets(float x,float y){
+            this.X = x;
+            this.Y = y;
+        }
+
+        public float getX() {
+            return X;
+        }
+
+        public float getY() {
+            return Y;
+        }
+    }
 
     public TorchBow(Settings settings) {
         super(settings);
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        if (user instanceof PlayerEntity playerEntity) {
-            boolean bl = playerEntity.getAbilities().creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
+    public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+        if (!(user instanceof PlayerEntity playerEntity)) {
+            return false;
+        } else {
             ItemStack itemStack = playerEntity.getProjectileType(stack);
-            if (!itemStack.isEmpty() || bl) {
-                if (itemStack.isEmpty()) {
-                    itemStack = new ItemStack(Blocks.TORCH);
-                }
-
-                int i = this.getMaxUseTime(stack) - remainingUseTicks;
+            if (itemStack.isEmpty()) {
+                return false;
+            } else {
+                int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
                 float f = getPullProgress(i);
-                if ((double) f >= 0.1D) {
-                    boolean bl2 = bl && itemStack.isOf(Items.ARROW);
-                    if (!world.isClient) {
-                        int size = 10;
-                        shootTorch(playerEntity, user, world, itemStack, stack, bl2, f);
-                        if (itemStack.isOf(MULCH_TORCH_ITEM)) {
-                            shootTorch(-size, size, playerEntity, user, world, itemStack, stack, bl2, f);
-                            shootTorch(-size, 0, playerEntity, user, world, itemStack, stack, bl2, f);
-                            shootTorch(-size, -size, playerEntity, user, world, itemStack, stack, bl2, f);
-                            shootTorch(size, size, playerEntity, user, world, itemStack, stack, bl2, f);
-                            shootTorch(size, 0, playerEntity, user, world, itemStack, stack, bl2, f);
-                            shootTorch(size, -size, playerEntity, user, world, itemStack, stack, bl2, f);
-                            shootTorch(0, size, playerEntity, user, world, itemStack, stack, bl2, f);
-                            shootTorch(0, -size, playerEntity, user, world, itemStack, stack, bl2, f);
+                if ((double)f < 0.1) {
+                    return false;
+                } else {
+                    List<ItemStack> list = load(stack, itemStack, playerEntity);
+                    if (world instanceof ServerWorld) {
+                        ServerWorld serverWorld = (ServerWorld)world;
+                        if (!list.isEmpty()) {
+                            if (list.getFirst().isOf(MULCH_TORCH_ITEM.asItem())){
+                                ItemStack item = list.getFirst().copy();
+                                list.addAll(Collections.nCopies(8, item));
+                            }
+                            this.shootAll(serverWorld, playerEntity, playerEntity.getActiveHand(), stack, list, f * 3.0F, 1.0F, f == 1.0F, (LivingEntity)null);
                         }
                     }
 
-                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
-                    if (!bl2 && !playerEntity.getAbilities().creativeMode) {
-                        itemStack.decrement(1);
-                        if (itemStack.isEmpty()) {
-                            playerEntity.getInventory().removeOne(itemStack);
-                        }
-                    }
-
+                    world.playSound((PlayerEntity)null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
                     playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+                    return true;
                 }
             }
         }
     }
 
-    private void shootTorch(PlayerEntity entitle, LivingEntity livingEntity, World worldIn, ItemStack itemstack, ItemStack stack, boolean flag1, float f) {
-        shootTorch(0, 0, entitle, livingEntity, worldIn, itemstack, stack, flag1, f);
+    @Override
+    protected void shoot(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target) {
+        float offsetX = 0F;
+        float offsetY = 0F;
+        if (index < 9){
+            float range = 10F;
+            Offsets[] offsets = {
+                    new Offsets(0F,0F),
+                    new Offsets(-range, -range),
+                    new Offsets(-range, 0.0F),
+                    new Offsets(-range, range),
+                    new Offsets(0.0F, -range),
+                    new Offsets(0.0F, range),
+                    new Offsets(range, -range),
+                    new Offsets(range, 0.0F),
+                    new Offsets(range, range)
+            };
+            offsetX = offsets[index].X;
+            offsetY = offsets[index].Y;
+        }
+        projectile.setVelocity(shooter, shooter.getPitch() + offsetX, shooter.getYaw() + yaw + offsetY, 0.0F, speed, divergence);
     }
 
-    private void shootTorch(int offsetX, int offsetY, PlayerEntity entitle, LivingEntity livingEntity, World worldIn, ItemStack itemstack, ItemStack stack, boolean flag1, float f) {
-        TorchEntity abstractedly = new TorchEntity(worldIn, livingEntity, itemstack.copyWithCount(1));
-        abstractedly.setVelocity(entitle, entitle.getPitch() + offsetX, entitle.getYaw() + offsetY, 0F, f * 3.0F, 1.0F);
-        if (f == 1.0F) {
-            abstractedly.setCritical(true);
-        }
-
-        int j = EnchantmentHelper.getLevel(Enchantments.POWER, stack);
-        if (j > 0) {
-            abstractedly.setDamage(abstractedly.getDamage() + (double) j * 0.5D + 0.5D);
-        }
-
-        int k = EnchantmentHelper.getLevel(Enchantments.PUNCH, stack);
-        if (k > 0) {
-            abstractedly.setPunch(k);
-        }
-
-        if (EnchantmentHelper.getLevel(Enchantments.FLAME, stack) > 0) {
-            abstractedly.setOnFireFor(100);
-        }
-        stack.damage(getWeaponStackDamage(itemstack), entitle, LivingEntity.getSlotForHand(entitle.getActiveHand()));
-        if (flag1 || entitle.getAbilities().creativeMode && (itemstack.isOf(Blocks.TORCH.asItem()))) {
-            abstractedly.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
-        }
-        worldIn.spawnEntity(abstractedly);
-    }
 
     @Override
     public UseAction getUseAction(ItemStack stack) {
         return UseAction.BOW;
-    }
-
-    @Override
-    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-        return ingredient.isOf(Items.FLINT_AND_STEEL) || super.canRepair(stack, ingredient);
     }
 
     @Override
@@ -127,8 +125,14 @@ public class TorchBow extends BowItem {
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity entity) {
         return 72000;
     }
 
+    @Override
+    protected ProjectileEntity createArrowEntity(World worldIn, LivingEntity livingEntity, ItemStack weaponStack, ItemStack pickupItem, boolean critical) {
+        if (pickupItem.isOf(MULCH_TORCH_ITEM.asItem())) pickupItem = Items.TORCH.getDefaultStack();
+        TorchEntity abstractedly = new TorchEntity(worldIn, livingEntity, pickupItem.copyWithCount(1), weaponStack);
+        return abstractedly;
+    }
 }

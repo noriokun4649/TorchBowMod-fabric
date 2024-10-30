@@ -6,6 +6,7 @@ import net.minecraft.item.ArrowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class TorchArrow extends ArrowItem {
 
@@ -13,7 +14,8 @@ public class TorchArrow extends ArrowItem {
         super(settings);
     }
 
-    public PersistentProjectileEntity createArrow(World world, ItemStack stack, LivingEntity shooter) {
-        return new TorchEntity(world, shooter, stack.copyWithCount(1));
+    @Override
+    public PersistentProjectileEntity createArrow(World world, ItemStack stack, LivingEntity shooter, @Nullable ItemStack shotFrom) {
+        return new TorchEntity(world, shooter, stack.copyWithCount(1),shotFrom);
     }
 }

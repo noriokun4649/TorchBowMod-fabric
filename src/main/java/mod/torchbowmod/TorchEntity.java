@@ -23,20 +23,12 @@ import static net.minecraft.util.math.Direction.UP;
 
 public class TorchEntity extends PersistentProjectileEntity {
 
-    protected TorchEntity(EntityType<? extends TorchEntity> entityType, World world, ItemStack itemStack) {
-        super(entityType, world, itemStack);
+    public TorchEntity(EntityType<TorchEntity> entityEntityType, World world) {
+        super(TORCH, world);
     }
 
-    public TorchEntity(World worldIn, LivingEntity livingEntity, ItemStack itemStack) {
-        super(TORCH, livingEntity, worldIn, itemStack);
-    }
-
-    public TorchEntity(EntityType<TorchEntity> torchEntityEntityType, World world) {
-        this(torchEntityEntityType, world, new ItemStack(Blocks.TORCH));
-    }
-
-    public TorchEntity(World worldIn, LivingEntity livingEntity) {
-        this(worldIn, livingEntity, new ItemStack(Blocks.TORCH));
+    public TorchEntity(World world, LivingEntity shooter, ItemStack itemStack, ItemStack shotFrom) {
+        super(TORCH ,shooter,world,itemStack,shotFrom);
     }
 
     @Override
@@ -66,7 +58,7 @@ public class TorchEntity extends PersistentProjectileEntity {
 
     @Override
     protected ItemStack getDefaultItemStack() {
-        return null;
+        return new ItemStack(Blocks.TORCH);
     }
 
 
@@ -101,6 +93,8 @@ public class TorchEntity extends PersistentProjectileEntity {
                         getWorld().setBlockState(setBlockPos, torch_state);
                     } else if (face != DOWN) {
                         getWorld().setBlockState(setBlockPos, torch_state.with(HORIZONTAL_FACING, face));
+                    }else{
+                        return;
                     }
                     this.remove(RemovalReason.KILLED);
                 }
