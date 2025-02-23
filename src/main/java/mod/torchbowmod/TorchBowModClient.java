@@ -3,12 +3,7 @@ package mod.torchbowmod;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
 
 import static mod.torchbowmod.TorchBowMod.*;
 
@@ -16,18 +11,6 @@ import static mod.torchbowmod.TorchBowMod.*;
 public class TorchBowModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        ModelPredicateProviderRegistry.register(TORCH_BOW_ITEM, Identifier.of("pull"), (itemStack, world, livingEntity, seed) -> {
-            if (livingEntity == null) {
-                return 0.0F;
-            }
-            return livingEntity.getActiveItem() != itemStack ? 0.0F : (itemStack.getMaxUseTime(livingEntity) - livingEntity.getItemUseTimeLeft()) / 20.0F;
-        });
-        ModelPredicateProviderRegistry.register(TORCH_BOW_ITEM, Identifier.of("pulling"), (itemStack, world, livingEntity, seed) -> {
-            if (livingEntity == null) {
-                return 0.0F;
-            }
-            return livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F;
-        });
         EntityRendererRegistry.register(TORCH, TorchEntityRender::new);
     }
 }

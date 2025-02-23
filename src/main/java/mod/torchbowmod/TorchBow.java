@@ -29,21 +29,13 @@ public class TorchBow extends BowItem {
     public static final Predicate<ItemStack> MULCH_TORCH = itemStack -> itemStack.isOf(MULCH_TORCH_ITEM.asItem());
     public static final Predicate<ItemStack> TORCH_GROUP = TORCH.or(TORCH_ARROW).or(MULCH_TORCH);
 
-    private class Offsets {
-        private float X;
-        private float Y;
+    private static class Offsets {
+        private final float X;
+        private final float Y;
 
         Offsets(float x,float y){
             this.X = x;
             this.Y = y;
-        }
-
-        public float getX() {
-            return X;
-        }
-
-        public float getY() {
-            return Y;
         }
     }
 
@@ -66,18 +58,17 @@ public class TorchBow extends BowItem {
                     return false;
                 } else {
                     List<ItemStack> list = load(stack, itemStack, playerEntity);
-                    if (world instanceof ServerWorld) {
-                        ServerWorld serverWorld = (ServerWorld)world;
+                    if (world instanceof ServerWorld serverWorld) {
                         if (!list.isEmpty()) {
                             if (list.getFirst().isOf(MULCH_TORCH_ITEM.asItem())){
                                 ItemStack item = list.getFirst().copy();
                                 list.addAll(Collections.nCopies(8, item));
                             }
-                            this.shootAll(serverWorld, playerEntity, playerEntity.getActiveHand(), stack, list, f * 3.0F, 1.0F, f == 1.0F, (LivingEntity)null);
+                            this.shootAll(serverWorld, playerEntity, playerEntity.getActiveHand(), stack, list, f * 3.0F, 1.0F, f == 1.0F, null);
                         }
                     }
 
-                    world.playSound((PlayerEntity)null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
                     playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
                     return true;
                 }
@@ -92,7 +83,7 @@ public class TorchBow extends BowItem {
         if (index < 9){
             float range = 10F;
             Offsets[] offsets = {
-                    new Offsets(0F,0F),
+                    new Offsets(0F, 0F),
                     new Offsets(-range, -range),
                     new Offsets(-range, 0.0F),
                     new Offsets(-range, range),
@@ -132,7 +123,6 @@ public class TorchBow extends BowItem {
     @Override
     protected ProjectileEntity createArrowEntity(World worldIn, LivingEntity livingEntity, ItemStack weaponStack, ItemStack pickupItem, boolean critical) {
         if (pickupItem.isOf(MULCH_TORCH_ITEM.asItem())) pickupItem = Items.TORCH.getDefaultStack();
-        TorchEntity abstractedly = new TorchEntity(worldIn, livingEntity, pickupItem.copyWithCount(1), weaponStack);
-        return abstractedly;
+        return new TorchEntity(worldIn, livingEntity, pickupItem.copyWithCount(1), weaponStack);
     }
 }
