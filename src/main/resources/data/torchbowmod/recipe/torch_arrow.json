@@ -1,8 +1,12 @@
 {
     "type": "minecraft:crafting_shapeless",
     "ingredients": [
-        "minecraft:torch",
-        "minecraft:arrow"
+        {
+            "item": "minecraft:torch"
+        },
+        {
+            "item": "minecraft:arrow"
+        }
     ],
     "result": {
         "id": "torchbowmod:torcharrow",

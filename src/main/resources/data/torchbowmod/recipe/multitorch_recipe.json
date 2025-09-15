@@ -6,7 +6,9 @@
     "III"
   ],
   "key": {
-    "I": "minecraft:torch"
+    "I": {
+      "item": "minecraft:torch"
+    }
   },
   "result": {
     "id": "torchbowmod:multitorch"

@@ -1,8 +1,12 @@
 {
     "type": "minecraft:crafting_shapeless",
     "ingredients": [
-        "minecraft:bow",
-        "minecraft:flint_and_steel"
+        {
+            "item": "minecraft:bow"
+        },
+        {
+            "item": "minecraft:flint_and_steel"
+        }
     ],
     "result": {
         "id": "torchbowmod:torchbow",

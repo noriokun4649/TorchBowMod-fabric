@@ -1,7 +1,9 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    "torchbowmod:multitorch"
+    {
+      "item": "torchbowmod:multitorch"
+    }
   ],
   "result": {
     "id": "minecraft:torch",
