@@ -1,18 +1,28 @@
 package mod.torchbowmod;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.minecraft.block.Block;
+import net.minecraft.block.WallTorchBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.registry.Registry;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.mojang.text2speech.Narrator.LOGGER;
+import static mod.torchbowmod.TorchBow.TORCH_ITEMS;
 
 public class TorchBowMod implements ModInitializer {
 
@@ -37,6 +47,7 @@ public class TorchBowMod implements ModInitializer {
                 entries.add(TorchBowMod.TORCH_ARROW_ITEM);
             })
             .build();
+    public static final Map<BlockItem, WallTorchBlock> ITEM_TO_WALL_BLOCK = new HashMap<>();
 
     static {
         TORCH = Registry.register(Registries.ENTITY_TYPE,
@@ -50,6 +61,28 @@ public class TorchBowMod implements ModInitializer {
         Registry.register(Registries.ITEM, TORCH_BOW_KEY, TORCH_BOW_ITEM);
         Registry.register(Registries.ITEM, MULCH_TORCH_KEY, MULCH_TORCH_ITEM);
         Registry.register(Registries.ITEM, TORCH_ARROW_KEY, TORCH_ARROW_ITEM);
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            Map<String, Integer> modCountMap = new HashMap<>();
+
+            for (Block block : Registries.BLOCK) {
+                if (block instanceof WallTorchBlock wallTorch) {
+                    Item asItem = block.asItem();
+                    if (asItem instanceof BlockItem blockItem) {
+                        ITEM_TO_WALL_BLOCK.put(blockItem, wallTorch);
+                        TORCH_ITEMS.add(blockItem);
+
+                        String namespace = Registries.ITEM.getId(asItem).getNamespace();
+                        modCountMap.merge(namespace, 1, Integer::sum);
+                    }
+                }
+            }
+
+            LOGGER.info("==== TorchBowMod Torch Item Auto-Registration Stats ====");
+            LOGGER.info("Total registered pairs: {}", ITEM_TO_WALL_BLOCK.size());
+            modCountMap.forEach((ns, count) -> LOGGER.info("Namespace '{}' has {} torch items", ns, count));
+            LOGGER.info("========================================================");
+        });
+
     }
 
 }

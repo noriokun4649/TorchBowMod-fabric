@@ -3,14 +3,12 @@ package mod.torchbowmod;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
-import static mod.torchbowmod.TorchBowMod.*;
+import static mod.torchbowmod.TorchBowMod.TORCH;
+import static mod.torchbowmod.TorchBowMod.TORCH_BOW_ITEM;
 
 @Environment(EnvType.CLIENT)
 public class TorchBowModClient implements ClientModInitializer {

@@ -5,8 +5,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -15,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+import static mod.torchbowmod.TorchBowMod.ITEM_TO_WALL_BLOCK;
 import static mod.torchbowmod.TorchBowMod.TORCH;
 import static net.minecraft.entity.EntityType.LIGHTNING_BOLT;
 import static net.minecraft.state.property.Properties.HORIZONTAL_FACING;
@@ -22,6 +27,8 @@ import static net.minecraft.util.math.Direction.DOWN;
 import static net.minecraft.util.math.Direction.UP;
 
 public class TorchEntity extends PersistentProjectileEntity {
+    private static final TrackedData<ItemStack> TORCH_ITEM =
+            DataTracker.registerData(TorchEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
     public TorchEntity(EntityType<TorchEntity> entityEntityType, World world) {
         super(TORCH, world);
@@ -29,14 +36,31 @@ public class TorchEntity extends PersistentProjectileEntity {
 
     public TorchEntity(World world, LivingEntity shooter, ItemStack itemStack, ItemStack shotFrom) {
         super(TORCH ,shooter,world,itemStack,shotFrom);
+        this.dataTracker.set(TORCH_ITEM, itemStack);
     }
 
+    @Override
+    protected void setStack(ItemStack stack) {
+        super.setStack(stack);
+        this.dataTracker.set(TORCH_ITEM, stack);
+    }
+
+    @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(TORCH_ITEM, this.getDefaultItemStack());
+    }
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         super.onEntityHit(entityHitResult);
         Entity entity = entityHitResult.getEntity();
         if (entity instanceof CreeperEntity creeper){
             creeperIgnite(creeper);
+        }
+        if (entity instanceof LivingEntity livingentity) {
+            if (!this.getWorld().isClient && this.getPierceLevel() <= 0) {
+                livingentity.setStuckArrowCount(livingentity.getStuckArrowCount() - 1);
+            }
         }
         entity.setOnFireFor(5);
     }
@@ -85,14 +109,13 @@ public class TorchEntity extends PersistentProjectileEntity {
         if (!blockstate.isAir()) {
             if (!getWorld().isClient) {
                 Direction face = ((BlockHitResult) raytracedResultIn).getSide();
-                BlockState torch_state = Blocks.WALL_TORCH.getDefaultState();
+                BlockState wallBlockState = getWallBlockState();
                 BlockPos setBlockPos = getPosOfFace(blockpos, face);
                 if (isBlockAIR(setBlockPos)) {
                     if (face == UP) {
-                        torch_state = Blocks.TORCH.getDefaultState();
-                        getWorld().setBlockState(setBlockPos, torch_state);
+                        getWorld().setBlockState(setBlockPos, getBlockState());
                     } else if (face != DOWN) {
-                        getWorld().setBlockState(setBlockPos, torch_state.with(HORIZONTAL_FACING, face));
+                        getWorld().setBlockState(setBlockPos, wallBlockState.with(HORIZONTAL_FACING, face));
                     }else{
                         return;
                     }
@@ -100,6 +123,19 @@ public class TorchEntity extends PersistentProjectileEntity {
                 }
             }
         }
+    }
+
+    private BlockState getWallBlockState(){
+        if (this.getItemStack().getItem() instanceof BlockItem blockItem){
+            return ITEM_TO_WALL_BLOCK.get(blockItem).getDefaultState();
+        }
+        return Blocks.WALL_TORCH.getDefaultState();
+    }
+    private BlockState getBlockState(){
+        if (this.getItemStack().getItem() instanceof BlockItem blockItem){
+            return blockItem.getBlock().getDefaultState();
+        }
+        return Blocks.TORCH.getDefaultState();
     }
 
     private BlockPos getPosOfFace(BlockPos blockPos, Direction face) {
@@ -121,5 +157,9 @@ public class TorchEntity extends PersistentProjectileEntity {
             if (getBlock == target) return true;
         }
         return false;
+    }
+
+    public ItemStack getTorchItem(){
+        return this.dataTracker.get(TORCH_ITEM);
     }
 }

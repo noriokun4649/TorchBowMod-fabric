@@ -1,9 +1,9 @@
 package mod.torchbowmod;
 
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -16,15 +16,18 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static mod.torchbowmod.TorchBowMod.*;
 
 
 public class TorchBow extends BowItem {
+    public static final Set<BlockItem> TORCH_ITEMS = new HashSet<>();
 
-    public static final Predicate<ItemStack> TORCH = itemStack -> itemStack.isOf(Blocks.TORCH.asItem());
+    public static final Predicate<ItemStack> TORCH = itemStack -> itemStack.getItem() instanceof BlockItem bi && ITEM_TO_WALL_BLOCK.containsKey(bi);
     public static final Predicate<ItemStack> TORCH_ARROW = itemStack -> itemStack.isOf(TORCH_ARROW_ITEM.asItem());
     public static final Predicate<ItemStack> MULCH_TORCH = itemStack -> itemStack.isOf(MULCH_TORCH_ITEM.asItem());
     public static final Predicate<ItemStack> TORCH_GROUP = TORCH.or(TORCH_ARROW).or(MULCH_TORCH);
