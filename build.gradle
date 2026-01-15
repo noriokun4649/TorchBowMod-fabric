@@ -1,16 +1,14 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 
 plugins {
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
 	id 'fabric-loom' version "${loom_version}"
 	id 'maven-publish'
 	id 'net.darkhax.curseforgegradle' version '1.+'
 	id "com.modrinth.minotaur" version "2.+"
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
 
-archivesBaseName ="$archives_base_name-$modloader_name-$minecraft_version"
 version = "v$project.mod_version"
 group = project.maven_group
 
@@ -59,11 +57,17 @@ java {
 	// if it is present.
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
+	inputs.property "archivesName", project.base.archivesName
+
+
 	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
+		rename { "${it}_${inputs.properties.archivesName}"}
 	}
 }
 
