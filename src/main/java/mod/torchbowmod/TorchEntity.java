@@ -58,7 +58,7 @@ public class TorchEntity extends PersistentProjectileEntity {
             creeperIgnite(creeper);
         }
         if (entity instanceof LivingEntity livingentity) {
-            if (!this.getWorld().isClient && this.getPierceLevel() <= 0) {
+            if (!this.getEntityWorld().isClient() && this.getPierceLevel() <= 0) {
                 livingentity.setStuckArrowCount(livingentity.getStuckArrowCount() - 1);
             }
         }
@@ -71,8 +71,8 @@ public class TorchEntity extends PersistentProjectileEntity {
         HitResult.Type raytraced$type = blockHitResult.getType();
         if (raytraced$type == HitResult.Type.BLOCK) {
             var statePos = blockHitResult.getBlockPos();
-            BlockState blockstate = this.getWorld().getBlockState(blockHitResult.getBlockPos());
-            if (getWorld().getBlockState(statePos).getBlock() == Blocks.TNT){
+            BlockState blockstate = this.getEntityWorld().getBlockState(blockHitResult.getBlockPos());
+            if (getEntityWorld().getBlockState(statePos).getBlock() == Blocks.TNT){
                 tntIgnite(blockHitResult);
             }else {
                 setTorch(blockHitResult, blockstate, blockHitResult);
@@ -89,16 +89,16 @@ public class TorchEntity extends PersistentProjectileEntity {
     private void creeperIgnite(CreeperEntity creeper){
         if (Math.random() < 0.05) {
             creeper.ignite();
-            var bolt = new LightningEntity(LIGHTNING_BOLT, getWorld());
+            var bolt = new LightningEntity(LIGHTNING_BOLT, getEntityWorld());
             bolt.setPosition(creeper.getBlockPos().toCenterPos());
-            getWorld().spawnEntity(bolt);
+            getEntityWorld().spawnEntity(bolt);
         } else if (Math.random() < 0.3) {
             creeper.ignite();
         }
     }
 
     private void tntIgnite(BlockHitResult blockHitResult){
-        var world = getWorld();
+        var world = getEntityWorld();
         var blockPos = blockHitResult.getBlockPos();
         TntBlock.primeTnt(world, blockPos);
         world.removeBlock(blockPos, false);
@@ -107,15 +107,15 @@ public class TorchEntity extends PersistentProjectileEntity {
     private void setTorch(BlockHitResult bloatwares, BlockState blockstate, HitResult raytracedResultIn) {
         BlockPos blockpos = bloatwares.getBlockPos();
         if (!blockstate.isAir()) {
-            if (!getWorld().isClient) {
+            if (!getEntityWorld().isClient()) {
                 Direction face = ((BlockHitResult) raytracedResultIn).getSide();
                 BlockState wallBlockState = getWallBlockState();
                 BlockPos setBlockPos = getPosOfFace(blockpos, face);
                 if (isBlockAIR(setBlockPos)) {
                     if (face == UP) {
-                        getWorld().setBlockState(setBlockPos, getBlockState());
+                        getEntityWorld().setBlockState(setBlockPos, getBlockState());
                     } else if (face != DOWN) {
-                        getWorld().setBlockState(setBlockPos, wallBlockState.with(HORIZONTAL_FACING, face));
+                        getEntityWorld().setBlockState(setBlockPos, wallBlockState.with(HORIZONTAL_FACING, face));
                     }else{
                         return;
                     }
@@ -150,7 +150,7 @@ public class TorchEntity extends PersistentProjectileEntity {
     }
 
     private boolean isBlockAIR(BlockPos pos) {
-        Block getBlock = this.getWorld().getBlockState(pos).getBlock();
+        Block getBlock = this.getEntityWorld().getBlockState(pos).getBlock();
         if (getBlock instanceof PlantBlock) return true;
         Block[] a = {Blocks.CAVE_AIR, Blocks.AIR, Blocks.SNOW, Blocks.VINE};//空気だとみなすブロックリスト
         for (Block target : a) {

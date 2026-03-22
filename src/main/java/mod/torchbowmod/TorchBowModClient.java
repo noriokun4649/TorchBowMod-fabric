@@ -3,7 +3,7 @@ package mod.torchbowmod;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.impl.client.rendering.EntityRendererRegistryImpl;
 
 import static mod.torchbowmod.TorchBowMod.TORCH;
 
@@ -11,7 +11,7 @@ import static mod.torchbowmod.TorchBowMod.TORCH;
 public class TorchBowModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        EntityRendererRegistry.register(TORCH, TorchEntityRender::new);
+        EntityRendererRegistryImpl.register(TORCH, TorchEntityRender::new);
     }
 }
 

@@ -1,1 +1,1 @@
-- Fix server crash.
+- Update 1.21.11 for fabric.

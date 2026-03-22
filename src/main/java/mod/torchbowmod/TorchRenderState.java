@@ -7,8 +7,8 @@ import net.minecraft.client.item.ItemModelManager;
 import net.minecraft.client.render.entity.state.ArrowEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 
 @Environment(EnvType.CLIENT)
 public class TorchRenderState extends ArrowEntityRenderState {
@@ -16,7 +16,7 @@ public class TorchRenderState extends ArrowEntityRenderState {
     public final ItemRenderState itemRenderState = new ItemRenderState();
 
     public void update(Entity entity, ItemStack stack, ItemModelManager itemModelManager) {
-        itemModelManager.updateForNonLivingEntity(this.itemRenderState, stack, ModelTransformationMode.GROUND, entity);
+        itemModelManager.updateForNonLivingEntity(this.itemRenderState, stack, ItemDisplayContext.GROUND, entity);
     }
 
 }
