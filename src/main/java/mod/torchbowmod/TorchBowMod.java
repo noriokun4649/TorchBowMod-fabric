@@ -17,16 +17,18 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.mojang.text2speech.Narrator.LOGGER;
 import static mod.torchbowmod.TorchBow.TORCH_ITEMS;
 
 public class TorchBowMod implements ModInitializer {
 
     public static final String MODID = "torchbowmod";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
     public static final Identifier TORCH_BOW_ID = Identifier.of(MODID, "torchbow");
     public static final Identifier MULCH_TORCH_ID = Identifier.of(MODID, "multitorch");
     public static final Identifier TORCH_ARROW_ID = Identifier.of(MODID, "torcharrow");
